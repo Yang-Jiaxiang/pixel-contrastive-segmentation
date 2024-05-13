@@ -31,7 +31,12 @@ class BaseDatasets(Dataset):
             # Apply the same transformation to the mask if any
             if self.transform:
                 msk = self.transform(Image.fromarray(msk * 255).convert("L"))
-
+            
+            msk = np.array(msk, dtype=np.float32) / 255.0
+            msk = (msk > 0).astype(np.float32)
+#             msk = np.expand_dims(msk, axis=0)  # Shape: [1, H, W]
+            msk = torch.from_numpy(msk).float()
+            
             # Calculate the background mask
             background_msk = 1.0 - msk.numpy()[0]  # Access the first channel to invert it
 
